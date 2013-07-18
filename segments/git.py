@@ -25,14 +25,12 @@ def get_git_status():
 
 
 def add_git_segment():
-    #cmd = "git branch 2> /dev/null | grep -e '\\*'"
-    p1 = subprocess.Popen(['git', 'branch', '--no-color'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    p2 = subprocess.Popen(['grep', '-e', '\\*'], stdin=p1.stdout, stdout=subprocess.PIPE)
-    output = p2.communicate()[0].strip()
-    if not output:
+    #cmd = "git rev-parse --abbrev-ref HEAD"
+    p2 = subprocess.Popen(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stdout=subprocess.PIPE)
+    branch = p2.communicate()[0].strip()
+    if not branch:
         return
 
-    branch = output.rstrip()[2:]
     has_pending_commits, has_untracked_files, origin_position = get_git_status()
     branch += origin_position
     if has_untracked_files:
