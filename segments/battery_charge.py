@@ -17,10 +17,8 @@ def add_battery_charge_segment():
   charge_threshold = ((10 * charge))
 
   # Output
-  # filled_char = '*'
-  # empty_char = '-'
-  filled_char = u"\u25CF" #u'◎' u'▸'
-  empty_char  = u"\u25CB" #u'◉'  u'▹'
+  filled_char = Character.BATTERY_FILLED
+  empty_char  = Character.BATTERY_EMPTY
 
   total_slots, slots = 4, []
   filled = int(math.ceil(charge_threshold * (total_slots / 10.0))) * filled_char

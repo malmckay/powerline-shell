@@ -1,8 +1,8 @@
 def add_root_indicator_segment():
     root_indicators = {
-        'bash': ' \\$ ',
-        'zsh': ' \\$ ',
-        'bare': ' $ ',
+        'bash': ('%s ' % Character.ROOT),
+        'zsh':  ('%s ' % Character.ROOT),
+        'bare': ' %s '   % Character.ROOT,
     }
     bg = Color.CMD_PASSED_BG
     fg = Color.CMD_PASSED_FG
