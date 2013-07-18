@@ -1,4 +1,5 @@
 import re
+import os
 import subprocess
 
 def get_git_status():
@@ -33,26 +34,33 @@ def is_git():
 
 
 def add_git_segment():
-        #cmd = "git rev-parse --abbrev-ref HEAD"
-        p2 = subprocess.Popen(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stdout=subprocess.PIPE)
-        branch = p2.communicate()[0].strip()
-        if not branch:
-            return
+    #cmd = "git rev-parse --abbrev-ref HEAD"
+    p2 = subprocess.Popen(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stdout=subprocess.PIPE)
+    branch = p2.communicate()[0].strip()
+    if not branch:
+        return
 
-        has_pending_commits, has_untracked_files, origin_position = get_git_status()
-        branch += origin_position
-        if has_untracked_files:
-            branch += ' +'
+    has_pending_commits, has_untracked_files, origin_position = get_git_status()
+    branch += origin_position
+    if has_untracked_files:
+        branch += ' +'
 
-        bg = Color.REPO_CLEAN_BG
-        fg = Color.REPO_CLEAN_FG
-        if has_pending_commits:
-            bg = Color.REPO_DIRTY_BG
-            fg = Color.REPO_DIRTY_FG
+    bg = Color.REPO_CLEAN_BG
+    fg = Color.REPO_CLEAN_FG
+    if has_pending_commits:
+        bg = Color.REPO_DIRTY_BG
+        fg = Color.REPO_DIRTY_FG
 
-        powerline.append(' %s ' % branch, fg, bg)
+    powerline.append(' %s ' % branch, fg, bg)
+
+def is_build():
+    p2 = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))
+    project_dir  = p2.communicate()[0].strip()
+    build_script = os.path.join(project_dir, 'script', 'jenkins.sh')
+    return os.path.isfile(build_script)
 
 def add_git_build_status():
+    if is_build():
         p2 = subprocess.Popen(['git', 'tag', '--contains', 'HEAD', '--list', 'green_*'], stdout=subprocess.PIPE)
 
         tags = p2.communicate()[0].strip()
