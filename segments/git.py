@@ -23,29 +23,55 @@ def get_git_status():
             has_untracked_files = True
     return has_pending_commits, has_untracked_files, origin_position
 
+def is_git():
+    p2 = subprocess.Popen(['git', 'rev-parse', '--is-inside-work-tree'], stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))
+    is_git = p2.communicate()[0].strip()
+    if is_git:
+        return True
+    else:
+        return False
+
 
 def add_git_segment():
-    #cmd = "git rev-parse --abbrev-ref HEAD"
-    p2 = subprocess.Popen(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stdout=subprocess.PIPE)
-    branch = p2.communicate()[0].strip()
-    if not branch:
-        return
+        #cmd = "git rev-parse --abbrev-ref HEAD"
+        p2 = subprocess.Popen(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stdout=subprocess.PIPE)
+        branch = p2.communicate()[0].strip()
+        if not branch:
+            return
 
-    has_pending_commits, has_untracked_files, origin_position = get_git_status()
-    branch += origin_position
-    if has_untracked_files:
-        branch += ' +'
+        has_pending_commits, has_untracked_files, origin_position = get_git_status()
+        branch += origin_position
+        if has_untracked_files:
+            branch += ' +'
 
-    bg = Color.REPO_CLEAN_BG
-    fg = Color.REPO_CLEAN_FG
-    if has_pending_commits:
-        bg = Color.REPO_DIRTY_BG
-        fg = Color.REPO_DIRTY_FG
+        bg = Color.REPO_CLEAN_BG
+        fg = Color.REPO_CLEAN_FG
+        if has_pending_commits:
+            bg = Color.REPO_DIRTY_BG
+            fg = Color.REPO_DIRTY_FG
 
-    powerline.append(' %s ' % branch, fg, bg)
+        powerline.append(' %s ' % branch, fg, bg)
+
+def add_git_build_status():
+        p2 = subprocess.Popen(['git', 'tag', '--contains', 'HEAD', '--list', 'green_*'], stdout=subprocess.PIPE)
+
+        tags = p2.communicate()[0].strip()
+
+        if tags:
+            build_state = Character.BUILD_SUCCESS
+            bg = Color.REPO_CLEAN_BG
+            fg = Color.REPO_CLEAN_FG
+        else:
+            build_state = Character.BUILD_NOT_BUILT
+            bg = Color.REPO_DIRTY_BG
+            fg = Color.REPO_DIRTY_FG
+
+        powerline.append(' %s ' % build_state, fg, bg)
 
 try:
-    add_git_segment()
+    if is_git():
+        add_git_segment()
+        add_git_build_status()
 except OSError:
     pass
 except subprocess.CalledProcessError:
