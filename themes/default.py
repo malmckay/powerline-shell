@@ -28,3 +28,10 @@ class Color:
 
     VIRTUAL_ENV_BG = 35  # a mid-tone green
     VIRTUAL_ENV_FG = 00
+
+class Character:
+    ROOT = u' ⚡ ' # % doesn't work atm, it's not escaped in root.py
+    BATTERY_FILLED  = u"\u25CF" #u'◎' u'▸' or *
+    BATTERY_EMPTY   = u"\u25CB" #u'◉'  u'▹' or _
+    BUILD_SUCCESS   = u"\u2713" #checkmark
+    BUILD_NOT_BUILT = u"\u2717" #ballot x
